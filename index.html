@@ -4,87 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Luci’s Wishlist</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f7f9fc;
-      color: #333;
-      padding: 2rem;
-      max-width: 700px;
-      margin: auto;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .item {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .item img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 10px;
-      margin: 1rem 0;
-    }
-    .item a {
-      color: #0066cc;
-      text-decoration: none;
-      word-break: break-word;
-    }
-    .price {
-      font-weight: bold;
-      font-size: 1.2rem;
-      color: #444;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <h1>Luci’s Wishlist</h1>
   <div id="wishlist">Načítám...</div>
-
-  <script>
-    // ZMĚŇ TENTO ODKAZ na svůj vlastní wishlist.md na GitHubu
-    const mdFileURL = 'https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@main/wishlist.md';
-
-    fetch(mdFileURL)
-      .then(res => res.text())
-      .then(data => {
-        const lines = data.trim().split('\n');
-        let html = '';
-        for (let i = 0; i < lines.length; i += 3) {
-          const title = lines[i]?.trim();
-          const link = lines[i + 1]?.trim();
-          const media = lines[i + 2]?.trim();
-
-          if (!title || !link || !media) continue;
-
-          let imgTag = '';
-          let priceTag = '';
-          if (/\.(jpg|jpeg|png|webp)(\?.*)?$/i.test(media)) {
-            imgTag = `<img src="${media}" alt="${title}">`;
-          } else if (/^\d[\d\s]*Kč$/.test(media)) {
-            priceTag = `<div class="price">${media}</div>`;
-          }
-
-          html += `
-            <div class="item">
-              <div><strong>${title}</strong></div>
-              <a href="${link}" target="_blank">${link}</a>
-              ${imgTag}
-              ${priceTag}
-            </div>
-          `;
-        }
-        document.getElementById('wishlist').innerHTML = html;
-      })
-      .catch(err => {
-        console.error('Chyba při načítání wishlistu:', err);
-        document.getElementById('wishlist').textContent = 'Nepodařilo se načíst wishlist.';
-      });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>

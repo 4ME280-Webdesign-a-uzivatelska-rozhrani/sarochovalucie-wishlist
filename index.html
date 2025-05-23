@@ -1,58 +1,51 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Wishlist</title>
-<style>
-  body { font-family: Arial, sans-serif; padding: 20px; }
-  .item { margin-bottom: 30px; }
-  .item img { max-width: 200px; display: block; margin-bottom: 10px; }
-  .item a { font-weight: bold; font-size: 1.2em; color: #0077cc; text-decoration: none; }
-  .item a:hover { text-decoration: underline; }
-  .price { color: #555; }
-</style>
+  <meta charset="UTF-8">
+  <title>Wishlist</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+      background: #f9f9f9;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      margin: 1rem 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    hr {
+      margin: 2rem 0;
+    }
+  </style>
 </head>
 <body>
+  <h1>🎁 Wishlist</h1>
+  <div id="content">Načítám…</div>
 
-<h1>Můj Wishlist</h1>
-<div id="wishlist"></div>
+  <script>
+    const rawURL = "https://raw.githubusercontent.com/4ME280-Webdesign-a-uzivatelska-rozhrani/sarochovalucie-wishlist/main/wishlist.md";
 
-<script>
-  // Zde vlož URL ke svému wishlist.md na jsDelivr (nebo jiný veřejný URL)
-  const wishlistUrl = "https://cdn.jsdelivr.net/gh/4ME280-Webdesign-a-uzivatelska-rozhrani/sarochovalucie-wishlist/blob/main/wishlist.md";
-
-  fetch(wishlistUrl)
-    .then(res => {
-      if (!res.ok) throw new Error('Nepodařilo se načíst wishlist.md');
-      return res.text();
-    })
-    .then(text => {
-      // Rozdělíme podle dvojitých nových řádků (prázdný řádek)
-      const blocks = text.trim().split(/\n\s*\n/);
-      const container = document.getElementById('wishlist');
-
-      blocks.forEach(block => {
-        const lines = block.trim().split('\n');
-        if (lines.length >= 4) {
-          const [name, link, img, price] = lines;
-          const itemDiv = document.createElement('div');
-          itemDiv.classList.add('item');
-
-          itemDiv.innerHTML = `
-            <a href="${link}" target="_blank" rel="noopener noreferrer">${name}</a>
-            <img src="${img}" alt="${name}" />
-            <div class="price">${price}</div>
-          `;
-
-          container.appendChild(itemDiv);
-        }
+    fetch(rawURL)
+      .then(response => response.text())
+      .then(markdown => {
+        // Najdi řádky, které obsahují jen URL obrázku, a převeď je na Markdown obrázky
+        const processed = markdown.replace(
+          /^- (https?:\/\/.*\.(?:png|jpg|jpeg|webp|gif))/gm,
+          (_, url) => `![](${url})`
+        );
+        // Překlad markdownu na HTML
+        document.getElementById('content').innerHTML = marked.parse(processed);
+      })
+      .catch(error => {
+        console.error(error);
+        document.getElementById('content').innerHTML = "<p>❌ Nepodařilo se načíst wishlist.</p>";
       });
-    })
-    .catch(err => {
-      document.getElementById('wishlist').textContent = "Chyba při načítání wishlistu: " + err.message;
-    });
-</script>
-
+  </script>
 </body>
 </html>

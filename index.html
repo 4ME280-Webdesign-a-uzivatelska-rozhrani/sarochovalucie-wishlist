@@ -2,13 +2,39 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Luci’s Wishlist</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wishlist</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Luci’s Wishlist</h1>
-  <div id="wishlist">Načítám...</div>
-  <script src="script.js"></script>
+  <h1>Wishlist</h1>
+  <div id="wishlist"></div>
+
+  <!-- Marked.js pro převod markdownu na HTML -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <script>
+    async function loadWishlist() {
+      try {
+        // Zde uprav URL na adresu tvého wishlist.md na GitHub Pages nebo repozitáři:
+        const response = await fetch('https://cdn.jsdelivr.net/gh/TVUJ-USERNAME/TVUJ-REPO@main/wishlist.md');
+        if (!response.ok) throw new Error('Nelze načíst wishlist.md');
+
+        const mdText = await response.text();
+
+        // Převod Markdown na HTML
+        const html = marked.parse(mdText);
+
+        // Vložit do stránky
+        document.getElementById('wishlist').innerHTML = html;
+
+        // Po vložení můžeš doladit styly obrázků, odkazů atd. v CSS
+      } catch (err) {
+        document.getElementById('wishlist').textContent = 'Chyba při načítání wishlistu: ' + err.message;
+      }
+    }
+
+    loadWishlist();
+  </script>
 </body>
 </html>

@@ -1,6 +1,5 @@
 const wishlistContainer = document.getElementById('wishlist');
 
-// Změň si tady na svoji GitHub URL přes jsDelivr (např. @main pokud máš main branch)
 const markdownUrl = 'https://cdn.jsdelivr.net/gh/4ME280-Webdesign-a-uzivatelska-rozhrani/sarochovalucie-wishlist/blob/main/wishlist.md';
 
 fetch(markdownUrl)

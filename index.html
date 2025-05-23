@@ -1,96 +1,103 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Wishlist</title>
   <style>
     body {
       font-family: sans-serif;
-      max-width: 800px;
-      margin: auto;
-      padding: 1rem;
+      padding: 2rem;
     }
-    .gift {
+    .item {
       border: 1px solid #ccc;
       padding: 1rem;
       margin-bottom: 1rem;
       border-radius: 8px;
     }
-    .gift img {
+    .item img {
       max-width: 150px;
       display: block;
       margin-bottom: 1rem;
     }
-    input[type="text"] {
-      width: 200px;
+    .item input[type="text"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .item button {
+      padding: 0.5rem 1rem;
     }
   </style>
 </head>
 <body>
-  <h1>Wishlist</h1>
+
+  <h1>🎁 Wishlist</h1>
   <div id="wishlist"></div>
 
   <script>
-    const BIN_ID = "683040cb8960c979a5a00ba9";
-    const API_KEY = "<$2a$10$HOZFJr6xE4AyXyJZC3XVVO9wh1zFD0a4s7k6em0cm5/8peG6pN3Wq>"; // Nahraď svým klíčem
-    const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const BIN_ID = '683040cb8960c979a5a00ba9';
+    const API_URL = `https://api.jsonbin.io/v3/b/683040cb8960c979a5a00ba9`;
+    const MASTER_KEY = '$2a$10$HOZFJr6xE4AyXyJZC3XVVO9wh1zFD0a4s7k6em0cm5/8peG6pN3Wq';
 
-    async function fetchWishlist() {
-      const response = await fetch(BIN_URL, {
+    async function loadWishlist() {
+      const res = await fetch(API_URL, {
         headers: {
-          'X-Master-Key': API_KEY
+          'X-Master-Key': MASTER_KEY
         }
       });
-      const data = await response.json();
-      return data.record.wishlist; // přístup ke konkrétnímu poli
+      const data = await res.json();
+      renderWishlist(data.record.wishlist);
     }
 
-    async function updateWishlist(newData) {
-      await fetch(BIN_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': API_KEY
-        },
-        body: JSON.stringify({ wishlist: newData }) // zabalení dat zpět do objektu
-      });
-    }
-
-    function renderWishlist(items) {
+    function renderWishlist(wishlist) {
       const container = document.getElementById('wishlist');
-      container.innerHTML = '';
-      items.forEach((item, index) => {
+      wishlist.forEach((item, index) => {
         const div = document.createElement('div');
-        div.className = 'gift';
+        div.className = 'item';
+
         div.innerHTML = `
-          <h2>${item.nazev}</h2>
-          <a href="${item.odkaz}" target="_blank">Odkaz na produkt</a><br />
-          <img src="${item.obrazek}" alt="${item.nazev}" />
-          <p><strong>Cena:</strong> ${item.cena}</p>
-          <label>
-            Kdo koupí: <input type="text" id="buyer-${index}" value="${item.koupenoKym || ''}" />
-          </label>
-          <button onclick="saveBuyer(${index})">Uložit</button>
+          <h2>${item.product}</h2>
+          <img src="${item.image}" alt="${item.product}">
+          <p><a href="${item.url}" target="_blank">Odkaz na produkt</a></p>
+          <p><strong>Cena:</strong> ${item.price}</p>
+          <p><strong>Rezervováno:</strong> <em>${item.reserved_by ?? '—'}</em></p>
+          <input type="text" placeholder="Zadej své jméno" id="input-${index}">
+          <button onclick="reserveGift(${index})">Rezervovat</button>
         `;
         container.appendChild(div);
       });
+
+      window.currentWishlist = wishlist;
     }
 
-    async function saveBuyer(index) {
-      const input = document.getElementById(`buyer-${index}`);
-      const newBuyer = input.value;
-      wishlistData[index].koupenoKym = newBuyer;
-      await updateWishlist(wishlistData);
-      alert("Uloženo!");
+    async function reserveGift(index) {
+      const name = document.getElementById(`input-${index}`).value.trim();
+      if (!name) {
+        alert('Zadej své jméno.');
+        return;
+      }
+
+      window.currentWishlist[index].reserved_by = name;
+
+      const res = await fetch(API_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': MASTER_KEY
+        },
+        body: JSON.stringify({ wishlist: window.currentWishlist })
+      });
+
+      if (res.ok) {
+        alert('Dárek byl úspěšně rezervován.');
+        location.reload();
+      } else {
+        alert('Nepodařilo se uložit. Zkontroluj klíč nebo síť.');
+      }
     }
 
-    let wishlistData = [];
-
-    fetchWishlist().then(data => {
-      wishlistData = data;
-      renderWishlist(wishlistData);
-    });
+    loadWishlist();
   </script>
 </body>
 </html>

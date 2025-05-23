@@ -1,20 +1,19 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   fetch("wishlist.md")
-    .then(response => response.text())
-    .then(markdown => {
-      const lines = markdown.split("\n");
-      const processed = lines.map(line => {
-        line = line.trim();
-        if (/\.(jpg|jpeg|png|webp)(\?.*)?$/i.test(line)) {
-          return `![](${line})`;
+    .then(res => res.text())
+    .then(text => {
+      const lines = text.split("\n").map(line => {
+        const trimmed = line.trim();
+        if (/\.(jpg|jpeg|png|webp)(\?.*)?$/i.test(trimmed)) {
+          return `![](${trimmed})`; // obrázek
         }
-        return line;
+        return trimmed; // běžný text nebo odkaz
       });
-      const html = marked.parse(processed.join("\n"));
+      const html = marked.parse(lines.join("\n"));
       document.getElementById("content").innerHTML = html;
     })
-    .catch(error => {
+    .catch(err => {
       document.getElementById("content").textContent = "Chyba při načítání wishlistu.";
-      console.error(error);
+      console.error("Chyba fetch:", err);
     });
 });

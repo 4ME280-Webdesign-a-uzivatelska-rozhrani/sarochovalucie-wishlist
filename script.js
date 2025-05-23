@@ -1,6 +1,4 @@
-const wishlistContainer = document.getElementById('wishlist');
-
-const markdownUrl = 'https://cdn.jsdelivr.net/gh/4ME280-Webdesign-a-uzivatelska-rozhrani/sarochovalucie-wishlist@main/wishlist.md';
+const markdownUrl = 'https://cdn.jsdelivr.net/gh/4me280-webdesign-a-uzivatelska-rozhrani/sarochovalucie-wishlist@main/wishlist.md';
 
 fetch(markdownUrl)
   .then(response => {
@@ -8,9 +6,9 @@ fetch(markdownUrl)
     return response.text();
   })
   .then(markdown => {
-    wishlistContainer.innerHTML = marked.parse(markdown);
+    document.getElementById('markdown-content').innerHTML = marked.parse(markdown);
   })
   .catch(error => {
-    wishlistContainer.textContent = error.message;
+    document.getElementById('markdown-content').textContent = 'Chyba při načítání wishlistu.';
     console.error(error);
   });

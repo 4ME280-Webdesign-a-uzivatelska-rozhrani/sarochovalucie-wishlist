@@ -1,38 +1,58 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wishlist</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 2rem;
-      line-height: 1.6;
-    }
-    img {
-      max-width: 100%;
-      height: auto;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wishlist</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  .item { margin-bottom: 30px; }
+  .item img { max-width: 200px; display: block; margin-bottom: 10px; }
+  .item a { font-weight: bold; font-size: 1.2em; color: #0077cc; text-decoration: none; }
+  .item a:hover { text-decoration: underline; }
+  .price { color: #555; }
+</style>
 </head>
 <body>
-  <h1>Wishlist</h1>
-  <div id="markdown-content">Načítání...</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script>
-    const markdownUrl = 'https://cdn.jsdelivr.net/gh/4me280-webdesign-a-uzivatelska-rozhrani/sarochovalucie-wishlist/wishlist.md';
+<h1>Můj Wishlist</h1>
+<div id="wishlist"></div>
 
-    fetch(markdownUrl)
-      .then(response => response.text())
-      .then(markdown => {
-        document.getElementById('markdown-content').innerHTML = marked.parse(markdown);
-      })
-      .catch(error => {
-        document.getElementById('markdown-content').textContent = 'Chyba při načítání wishlistu.';
-        console.error(error);
+<script>
+  // Zde vlož URL ke svému wishlist.md na jsDelivr (nebo jiný veřejný URL)
+  const wishlistUrl = "https://cdn.jsdelivr.net/gh/4ME280-Webdesign-a-uzivatelska-rozhrani/sarochovalucie-wishlist/blob/main/wishlist.md";
+
+  fetch(wishlistUrl)
+    .then(res => {
+      if (!res.ok) throw new Error('Nepodařilo se načíst wishlist.md');
+      return res.text();
+    })
+    .then(text => {
+      // Rozdělíme podle dvojitých nových řádků (prázdný řádek)
+      const blocks = text.trim().split(/\n\s*\n/);
+      const container = document.getElementById('wishlist');
+
+      blocks.forEach(block => {
+        const lines = block.trim().split('\n');
+        if (lines.length >= 4) {
+          const [name, link, img, price] = lines;
+          const itemDiv = document.createElement('div');
+          itemDiv.classList.add('item');
+
+          itemDiv.innerHTML = `
+            <a href="${link}" target="_blank" rel="noopener noreferrer">${name}</a>
+            <img src="${img}" alt="${name}" />
+            <div class="price">${price}</div>
+          `;
+
+          container.appendChild(itemDiv);
+        }
       });
-  </script>
+    })
+    .catch(err => {
+      document.getElementById('wishlist').textContent = "Chyba při načítání wishlistu: " + err.message;
+    });
+</script>
+
 </body>
 </html>

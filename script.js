@@ -1,17 +1,18 @@
-// Funkce pro načtení souboru wishlist.md přes fetch API
-fetch('wishlist.md')
+const wishlistContainer = document.getElementById('wishlist');
+
+// Změň si tady na svoji GitHub URL přes jsDelivr (např. @main pokud máš main branch)
+const markdownUrl = 'https://cdn.jsdelivr.net/gh/sarochovalucie/@main/wishlist.md';
+
+fetch(markdownUrl)
   .then(response => {
-    if (!response.ok) throw new Error('Nepodařilo se načíst markdown');
+    if (!response.ok) throw new Error('Chyba při načítání wishlistu');
     return response.text();
   })
-  .then(mdText => {
-    // Převod Markdownu na HTML pomocí marked
-    const html = marked.parse(mdText);
-
-    // Vložení výsledného HTML do divu
-    document.getElementById('content').innerHTML = html;
+  .then(markdown => {
+    // Převod markdown na HTML pomocí marked.js
+    wishlistContainer.innerHTML = marked.parse(markdown);
   })
-  .catch(err => {
-    document.getElementById('content').innerText = 'Chyba při načítání wishlistu: ' + err;
+  .catch(error => {
+    wishlistContainer.textContent = error.message;
+    console.error(error);
   });
-

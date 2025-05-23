@@ -4,35 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wishlist</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 2rem;
-      line-height: 1.6;
-    }
-    img {
-      max-width: 100%;
-      height: auto;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Wishlist</h1>
   <div id="markdown-content">Načítání...</div>
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script>
-    const markdownUrl = 'https://cdn.jsdelivr.net/gh/4me280-webdesign-a-uzivatelska-rozhrani/sarochovalucie-wishlist/wishlist.md';
-
-    fetch(markdownUrl)
-      .then(response => response.text())
-      .then(markdown => {
-        document.getElementById('markdown-content').innerHTML = marked.parse(markdown);
-      })
-      .catch(error => {
-        document.getElementById('markdown-content').textContent = 'Chyba při načítání wishlistu.';
-        console.error(error);
-      });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>

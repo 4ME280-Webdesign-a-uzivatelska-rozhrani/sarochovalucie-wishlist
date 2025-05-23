@@ -12,3 +12,13 @@ fetch(markdownUrl)
     document.getElementById('markdown-content').textContent = 'Chyba při načítání wishlistu.';
     console.error(error);
   });
+
+.then(markdown => {
+  // Základní převod na HTML
+  let html = marked.parse(markdown);
+
+  // Převést všechny URL končící na obrázkové přípony na obrázky
+  html = html.replace(/(https?:\/\/\S+\.(?:jpg|jpeg|png|gif|webp))/gi, '<img src="$1" alt="Obrázek">');
+
+  document.getElementById('markdown-content').innerHTML = html;
+})

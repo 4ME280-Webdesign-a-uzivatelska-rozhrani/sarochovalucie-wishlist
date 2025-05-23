@@ -1,13 +1,25 @@
-fetch('wishlist.md')
-  .then(res => {
-    if (!res.ok) throw new Error(`Chyba při načítání MD: ${res.status}`);
-    return res.text();
-  })
-  .then(text => {
-    const html = marked.parse(text);
-    document.getElementById('content').innerHTML = html;
-  })
-  .catch(err => {
-    document.getElementById('content').innerHTML = `<p style="color: red;">Chyba při načítání wishlistu: ${err.message}</p>`;
-    console.error(err);
-  });
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("wishlist.md")
+    .then(response => response.text())
+    .then(markdown => {
+      // Převod obrázkových URL na Markdown obrázky
+      const updatedMarkdown = markdown
+        .split("\n")
+        .map(line => {
+          const isImageURL = /(https?:\/\/.*\.(?:png|jpg|jpeg|webp))/i;
+          if (isImageURL.test(line.trim())) {
+            return `![](${line.trim()})`;
+          }
+          return line;
+        })
+        .join("\n");
+
+      // Převod Markdownu na HTML a vložení na stránku
+      const html = marked.parse(updatedMarkdown);
+      document.getElementById("content").innerHTML = html;
+    })
+    .catch(error => {
+      console.error("Chyba při načítání wishlist.md:", error);
+      document.getElementById("content").textContent = "Chyba při načítání wishlistu.";
+    });
+});

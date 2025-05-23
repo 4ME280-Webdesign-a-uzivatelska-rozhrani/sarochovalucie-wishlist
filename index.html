@@ -43,7 +43,7 @@
         }
       });
       const data = await response.json();
-      return data.record;
+      return data.record.wishlist; // přístup ke konkrétnímu poli
     }
 
     async function updateWishlist(newData) {
@@ -53,7 +53,7 @@
           'Content-Type': 'application/json',
           'X-Master-Key': API_KEY
         },
-        body: JSON.stringify(newData)
+        body: JSON.stringify({ wishlist: newData }) // zabalení dat zpět do objektu
       });
     }
 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wishlist</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 1rem;
+    }
+    .gift {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+    }
+    .gift img {
+      max-width: 150px;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    input[type="text"] {
+      width: 200px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Wishlist</h1>
+  <div id="wishlist"></div>
+
+  <script>
+    const BIN_ID = "683040cb8960c979a5a00ba9";
+    const API_KEY = "<$2a$10$HOZFJr6xE4AyXyJZC3XVVO9wh1zFD0a4s7k6em0cm5/8peG6pN3Wq>"; // Nahraď svým klíčem
+    const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+    async function fetchWishlist() {
+      const response = await fetch(BIN_URL, {
+        headers: {
+          'X-Master-Key': API_KEY
+        }
+      });
+      const data = await response.json();
+      return data.record;
+    }
+
+    async function updateWishlist(newData) {
+      await fetch(BIN_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': API_KEY
+        },
+        body: JSON.stringify(newData)
+      });
+    }
+
+    function renderWishlist(items) {
+      const container = document.getElementById('wishlist');
+      container.innerHTML = '';
+      items.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'gift';
+        div.innerHTML = `
+          <h2>${item.nazev}</h2>
+          <a href="${item.odkaz}" target="_blank">Odkaz na produkt</a><br />
+          <img src="${item.obrazek}" alt="${item.nazev}" />
+          <p><strong>Cena:</strong> ${item.cena}</p>
+          <label>
+            Kdo koupí: <input type="text" id="buyer-${index}" value="${item.koupenoKym || ''}" />
+          </label>
+          <button onclick="saveBuyer(${index})">Uložit</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function saveBuyer(index) {
+      const input = document.getElementById(`buyer-${index}`);
+      const newBuyer = input.value;
+      wishlistData[index].koupenoKym = newBuyer;
+      await updateWishlist(wishlistData);
+      alert("Uloženo!");
+    }
+
+    let wishlistData = [];
+
+    fetchWishlist().then(data => {
+      wishlistData = data;
+      renderWishlist(wishlistData);
+    });
+  </script>
+</body>
+</html>
